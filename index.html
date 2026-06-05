@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>partiu — Gerencie. Agende. Evolua.</title>
+  <meta name="description" content="Plataforma de agendamento e gestão para negócios esportivos e de lazer. Escolas de surf, campos, academias, estúdios e muito mais." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ocean:    #0a7c8c;
+      --deep:     #064e5a;
+      --turq:     #1ab5cc;
+      --aqua:     #5ee7e0;
+      --coral:    #ff5e3a;
+      --peach:    #ff8c6b;
+      --sand:     #f5e6c8;
+      --cream:    #fdf8f0;
+      --ink:      #0d2b30;
+      --mid:      #3a6b72;
+      --white:    #ffffff;
+
+      --ff-display: 'Syne', sans-serif;
+      --ff-body:    'DM Sans', sans-serif;
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--ff-body);
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 5vw;
+      background: rgba(6, 78, 90, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-logo {
+      font-family: var(--ff-display);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-logo span { color: var(--aqua); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--aqua); }
+
+    .nav-cta {
+      background: var(--coral);
+      color: var(--white) !important;
+      padding: 0.55rem 1.3rem;
+      border-radius: 2rem;
+      font-weight: 600 !important;
+      transition: background 0.2s, transform 0.15s !important;
+    }
+    .nav-cta:hover { background: var(--peach) !important; transform: translateY(-1px); }
+
+    .nav-hamburger {
+      display: none;
+      background: none; border: none;
+      cursor: pointer; flex-direction: column; gap: 5px;
+    }
+    .nav-hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--white); border-radius: 2px;
+      transition: transform 0.3s;
+    }
+
+    /* ─── HERO ────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; align-items: center;
+      background: linear-gradient(135deg, var(--deep) 0%, var(--ocean) 50%, #0d9fa8 100%);
+      overflow: hidden;
+      padding-top: 80px;
+    }
+
+    .hero-bg-circles {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .hero-bg-circles circle {
+      animation: float 8s ease-in-out infinite;
+    }
+    .hero-bg-circles circle:nth-child(2) { animation-delay: -3s; }
+    .hero-bg-circles circle:nth-child(3) { animation-delay: -5.5s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-25px); }
+    }
+
+    .hero-inner {
+      position: relative; z-index: 2;
+      width: 100%; max-width: 1200px;
+      margin: 0 auto;
+      padding: 6rem 5vw 10rem;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+    }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--aqua);
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      width: fit-content;
+    }
+
+    .hero-title {
+      font-family: var(--ff-display);
+      font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title .accent { color: var(--coral); }
+    .hero-title .accent2 { color: var(--aqua); }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.75);
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--coral);
+      color: var(--white);
+      text-decoration: none;
+      padding: 0.9rem 2rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.25s var(--ease-out);
+      box-shadow: 0 8px 30px rgba(255,94,58,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(255,94,58,0.5); background: var(--peach); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: var(--white);
+      text-decoration: none;
+      padding: 0.9rem 2rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.25s var(--ease-out);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.2); }
+
+    .hero-stats {
+      display: flex; gap: 2rem; margin-top: 3rem; flex-wrap: wrap;
+    }
+    .hero-stat {
+      display: flex; flex-direction: column;
+    }
+    .hero-stat strong {
+      font-family: var(--ff-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--aqua);
+    }
+    .hero-stat span { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+
+    /* Mock app card on hero right */
+    .hero-mockup {
+      position: relative;
+    }
+    .mockup-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .mockup-card::before {
+      content: '';
+      position: absolute; top: -40%; right: -20%;
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, rgba(255,94,58,0.25), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .mockup-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .mockup-title {
+      font-family: var(--ff-display);
+      font-weight: 700; font-size: 0.9rem;
+      color: var(--aqua);
+    }
+    .mockup-badge {
+      background: rgba(94,231,224,0.15);
+      color: var(--aqua);
+      font-size: 0.7rem; font-weight: 600;
+      padding: 0.25rem 0.7rem; border-radius: 1rem;
+      border: 1px solid rgba(94,231,224,0.3);
+    }
+
+    .mockup-row {
+      display: flex; align-items: center; gap: 1rem;
+      background: rgba(255,255,255,0.06);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.6rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .mockup-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      background: linear-gradient(135deg, var(--turq), var(--coral));
+      flex-shrink: 0;
+    }
+    .mockup-info { flex: 1; }
+    .mockup-name { font-size: 0.8rem; font-weight: 600; color: var(--white); }
+    .mockup-time { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+    .mockup-level {
+      font-size: 0.65rem; font-weight: 700;
+      padding: 0.2rem 0.5rem; border-radius: 1rem;
+      background: rgba(255,140,107,0.2);
+      color: var(--peach);
+      border: 1px solid rgba(255,140,107,0.3);
+    }
+
+    .mockup-metrics {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.75rem; margin-top: 1.25rem;
+    }
+    .metric-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+    }
+    .metric-box .val {
+      font-family: var(--ff-display);
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--white);
+    }
+    .metric-box .lbl { font-size: 0.65rem; color: rgba(255,255,255,0.5); }
+    .metric-box .change { font-size: 0.7rem; color: #4ade80; margin-top: 0.1rem; }
+
+    /* ─── WAVE ────────────────────────────────────── */
+    .wave-divider {
+      display: block; width: 100%;
+      overflow: hidden; line-height: 0;
+      margin-top: -2px;
+    }
+    .wave-divider svg { display: block; width: 100%; }
+
+    /* ─── SECTIONS COMMON ────────────────────────── */
+    section { padding: 6rem 5vw; }
+
+    .section-label {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ocean);
+      margin-bottom: 1rem;
+    }
+    .section-label::before {
+      content: '';
+      display: block; width: 20px; height: 2px;
+      background: var(--coral);
+    }
+
+    .section-title {
+      font-family: var(--ff-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+
+    .section-sub {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--mid);
+      max-width: 560px;
+    }
+
+    .inner { max-width: 1200px; margin: 0 auto; }
+
+    /* ─── VERTICAIS ───────────────────────────────── */
+    #verticais { background: var(--white); }
+
+    .verticais-head {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .verticais-head .section-label { justify-content: center; }
+    .verticais-head .section-label::before { display: none; }
+    .verticais-head .section-sub { margin: 0 auto; }
+
+    .verticais-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .vertical-card {
+      background: var(--cream);
+      border: 1.5px solid rgba(10,124,140,0.1);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 0.75rem;
+      transition: all 0.25s var(--ease-out);
+      cursor: default;
+    }
+    .vertical-card:hover {
+      border-color: var(--turq);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 35px rgba(10,124,140,0.12);
+    }
+
+    .v-emoji { font-size: 2rem; }
+    .v-cat {
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--coral);
+    }
+    .v-name {
+      font-family: var(--ff-display);
+      font-size: 1rem; font-weight: 700;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+
+    /* ─── COMO FUNCIONA ───────────────────────────── */
+    #como-funciona {
+      background: linear-gradient(180deg, var(--cream) 0%, var(--sand) 100%);
+    }
+
+    .como-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: start;
+      margin-top: 4rem;
+    }
+
+    .como-side-title {
+      font-family: var(--ff-display);
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--ocean);
+      margin-bottom: 2rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .como-side-title .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--coral);
+    }
+
+    .step {
+      display: flex; gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ocean), var(--turq));
+      color: var(--white);
+      font-family: var(--ff-display);
+      font-weight: 800; font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(10,124,140,0.3);
+    }
+    .step-body h4 {
+      font-family: var(--ff-display);
+      font-weight: 700; font-size: 1rem;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+    }
+    .step-body p { font-size: 0.9rem; line-height: 1.6; color: var(--mid); }
+
+    /* ─── FUNCIONALIDADES ─────────────────────────── */
+    #funcionalidades {
+      background: var(--deep);
+      position: relative; overflow: hidden;
+    }
+    #funcionalidades::before {
+      content: '';
+      position: absolute; top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(26,181,204,0.12), transparent 60%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    #funcionalidades .section-label { color: var(--aqua); }
+    #funcionalidades .section-title { color: var(--white); }
+    #funcionalidades .section-sub { color: rgba(255,255,255,0.65); }
+
+    .func-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+    }
+
+    .func-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1.25rem;
+      padding: 2rem;
+      transition: all 0.25s var(--ease-out);
+      position: relative; overflow: hidden;
+    }
+    .func-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--turq), var(--coral));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s var(--ease-out);
+    }
+    .func-card:hover { transform: translateY(-4px); border-color: rgba(94,231,224,0.3); }
+    .func-card:hover::after { transform: scaleX(1); }
+
+    .func-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .func-card h3 {
+      font-family: var(--ff-display);
+      font-weight: 700; font-size: 1.05rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+    .func-card p { font-size: 0.875rem; line-height: 1.65; color: rgba(255,255,255,0.6); }
+
+    /* ─── GAMIFICAÇÃO ─────────────────────────────── */
+    #gamificacao {
+      background: var(--cream);
+      position: relative;
+    }
+
+    .game-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center;
+    }
+
+    .level-track {
+      display: flex; flex-direction: column; gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .level-row {
+      display: flex; align-items: center; gap: 1.25rem;
+      background: var(--white);
+      border: 1.5px solid rgba(10,124,140,0.1);
+      border-radius: 1rem;
+      padding: 1rem 1.25rem;
+      transition: all 0.2s;
+    }
+    .level-row.active {
+      border-color: var(--turq);
+      box-shadow: 0 4px 20px rgba(10,124,140,0.15);
+    }
+    .level-badge {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .level-badge.ini { background: linear-gradient(135deg, #d4e8eb, #a8d5dc); }
+    .level-badge.int { background: linear-gradient(135deg, var(--turq), var(--ocean)); }
+    .level-badge.adv { background: linear-gradient(135deg, var(--coral), #ff3a00); }
+
+    .level-info { flex: 1; }
+    .level-name {
+      font-family: var(--ff-display);
+      font-weight: 700; font-size: 0.95rem;
+      color: var(--ink);
+    }
+    .level-desc { font-size: 0.8rem; color: var(--mid); }
+
+    .xp-bar-wrap {
+      width: 80px;
+    }
+    .xp-bar {
+      height: 5px;
+      background: rgba(10,124,140,0.12);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.2rem;
+    }
+    .xp-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--turq), var(--coral));
+    }
+    .xp-label { font-size: 0.65rem; color: var(--mid); text-align: right; }
+
+    .conquistas-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem; margin-top: 2rem;
+    }
+    .conquista {
+      background: var(--white);
+      border: 1.5px solid rgba(10,124,140,0.1);
+      border-radius: 1rem;
+      padding: 1rem 0.75rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .conquista:hover {
+      border-color: var(--coral);
+      transform: translateY(-2px);
+    }
+    .conquista .icon { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
+    .conquista .cname { font-size: 0.7rem; font-weight: 600; color: var(--ink); }
+
+    /* ─── DEPOIMENTO / CASE ───────────────────────── */
+    #case {
+      background: linear-gradient(135deg, var(--ocean), var(--deep));
+      position: relative; overflow: hidden;
+    }
+    #case::before {
+      content: '🏄';
+      position: absolute; right: 5%; top: 50%;
+      transform: translateY(-50%) rotate(15deg);
+      font-size: 12rem;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+
+    .case-inner {
+      max-width: 800px; margin: 0 auto;
+      text-align: center; position: relative;
+    }
+
+    .case-quote {
+      font-family: var(--ff-display);
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.45;
+      margin: 2rem 0;
+    }
+    .case-quote::before { content: '\201C'; color: var(--aqua); }
+    .case-quote::after  { content: '\201D'; color: var(--aqua); }
+
+    .case-author {
+      display: flex; align-items: center; gap: 1rem;
+      justify-content: center;
+    }
+    .case-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--turq), var(--coral));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      border: 3px solid rgba(255,255,255,0.2);
+    }
+    .case-name {
+      font-family: var(--ff-display);
+      font-weight: 700; color: var(--white);
+      font-size: 0.95rem;
+    }
+    .case-role { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+
+    .case-tags {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      justify-content: center; margin-top: 2.5rem;
+    }
+    .case-tag {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--aqua);
+      padding: 0.4rem 1rem; border-radius: 2rem;
+      font-size: 0.8rem; font-weight: 500;
+    }
+
+    /* ─── PRICING ─────────────────────────────────── */
+    #planos { background: var(--white); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 3.5rem;
+      align-items: start;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .plan-card {
+      border: 2px solid rgba(10,124,140,0.1);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      position: relative;
+      transition: all 0.25s var(--ease-out);
+    }
+    .plan-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(10,124,140,0.1);
+    }
+    .plan-card.featured {
+      background: linear-gradient(160deg, var(--deep), var(--ocean));
+      border-color: transparent;
+      color: var(--white);
+    }
+    .plan-card.featured .plan-name { color: var(--aqua); }
+    .plan-card.featured .plan-price { color: var(--white); }
+    .plan-card.featured .plan-period { color: rgba(255,255,255,0.6); }
+    .plan-card.featured .plan-desc { color: rgba(255,255,255,0.7); }
+    .plan-card.featured .plan-feature { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.1); }
+    .plan-card.featured .plan-check { background: rgba(94,231,224,0.2); color: var(--aqua); }
+
+    .popular-badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--coral);
+      color: var(--white);
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.3rem 1rem; border-radius: 2rem;
+      white-space: nowrap;
+    }
+
+    .plan-name {
+      font-family: var(--ff-display);
+      font-weight: 800; font-size: 0.8rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ocean);
+      margin-bottom: 0.75rem;
+    }
+    .plan-price {
+      font-family: var(--ff-display);
+      font-size: 2.5rem; font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .plan-price span { font-size: 1rem; font-weight: 400; }
+    .plan-period {
+      font-size: 0.8rem; color: var(--mid); margin-bottom: 0.5rem;
+    }
+    .plan-desc {
+      font-size: 0.875rem; color: var(--mid);
+      line-height: 1.6; margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(10,124,140,0.1);
+    }
+    .plan-features { list-style: none; margin-bottom: 2rem; }
+    .plan-feature {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.875rem; color: var(--ink);
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(10,124,140,0.06);
+    }
+    .plan-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(10,124,140,0.1);
+      color: var(--ocean);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; flex-shrink: 0;
+    }
+
+    .btn-plan {
+      display: block; text-align: center;
+      padding: 0.85rem;
+      border-radius: 2rem;
+      font-weight: 700; font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-plan-primary {
+      background: var(--coral); color: var(--white);
+      box-shadow: 0 6px 20px rgba(255,94,58,0.35);
+    }
+    .btn-plan-primary:hover { background: var(--peach); transform: translateY(-2px); }
+    .btn-plan-outline {
+      background: transparent;
+      border: 2px solid rgba(10,124,140,0.2);
+      color: var(--ocean);
+    }
+    .btn-plan-outline:hover { border-color: var(--ocean); background: rgba(10,124,140,0.05); }
+    .btn-plan-ghost {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: var(--white);
+    }
+    .btn-plan-ghost:hover { background: rgba(255,255,255,0.25); }
+
+    .pricing-note {
+      text-align: center;
+      font-size: 0.875rem; color: var(--mid);
+      margin-top: 2rem;
+    }
+
+    /* ─── CTA FINAL ───────────────────────────────── */
+    #cta-final {
+      background: var(--cream);
+      text-align: center;
+      padding: 8rem 5vw;
+    }
+
+    .cta-box {
+      max-width: 680px; margin: 0 auto;
+    }
+
+    .cta-emoji { font-size: 4rem; margin-bottom: 1.5rem; display: block; }
+
+    .cta-title {
+      font-family: var(--ff-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+    }
+    .cta-title .wave-text { color: var(--ocean); }
+
+    .cta-sub {
+      font-size: 1.05rem; color: var(--mid);
+      line-height: 1.7; margin-bottom: 2.5rem;
+    }
+
+    .btn-whatsapp {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      background: #25d366;
+      color: var(--white);
+      text-decoration: none;
+      padding: 1rem 2.5rem;
+      border-radius: 3rem;
+      font-weight: 700; font-size: 1.1rem;
+      transition: all 0.25s var(--ease-out);
+      box-shadow: 0 10px 35px rgba(37,211,102,0.35);
+    }
+    .btn-whatsapp:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 45px rgba(37,211,102,0.45);
+    }
+    .btn-whatsapp svg { width: 22px; height: 22px; fill: white; }
+
+    /* ─── FOOTER ──────────────────────────────────── */
+    footer {
+      background: var(--deep);
+      padding: 3rem 5vw;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+
+    .footer-logo {
+      font-family: var(--ff-display);
+      font-weight: 800; font-size: 1.3rem;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .footer-logo span { color: var(--aqua); }
+
+    .footer-links {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none; font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--aqua); }
+
+    .footer-copy {
+      font-size: 0.8rem; color: rgba(255,255,255,0.35);
+      text-align: right;
+    }
+
+    /* ─── SCROLL REVEAL ───────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+    .reveal-delay-6 { transition-delay: 0.6s; }
+
+    /* ─── FLOATING WA BUTTON ──────────────────────── */
+    .wa-float {
+      position: fixed; bottom: 2rem; right: 2rem;
+      z-index: 200;
+      width: 58px; height: 58px;
+      background: #25d366;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 6px 25px rgba(37,211,102,0.45);
+      transition: transform 0.2s var(--ease-out), box-shadow 0.2s;
+      animation: pulse-wa 3s ease infinite;
+    }
+    .wa-float:hover { transform: scale(1.1); box-shadow: 0 10px 35px rgba(37,211,102,0.55); }
+    .wa-float svg { width: 28px; height: 28px; fill: white; }
+
+    @keyframes pulse-wa {
+      0%, 100% { box-shadow: 0 6px 25px rgba(37,211,102,0.45); }
+      50%       { box-shadow: 0 6px 35px rgba(37,211,102,0.7), 0 0 0 8px rgba(37,211,102,0.12); }
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-mockup { display: none; }
+
+      .como-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .game-inner { grid-template-columns: 1fr; gap: 3rem; }
+
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-copy { text-align: left; }
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 4rem 5vw; }
+      .conquistas-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-stats { gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">partiu</a>
+  <ul class="nav-links">
+    <li><a href="#verticais">Segmentos</a></li>
+    <li><a href="#funcionalidades">Funcionalidades</a></li>
+    <li><a href="#case">Cases</a></li>
+    <li><a href="#planos">Planos</a></li>
+    <li><a href="https://wa.me/5581997411297" target="_blank" class="nav-cta">Falar no WhatsApp</a></li>
+  </ul>
+  <button class="nav-hamburger" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ─── HERO ────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <svg class="hero-bg-circles" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;">
+    <circle cx="1200" cy="150" r="300" fill="rgba(94,231,224,0.07)"/>
+    <circle cx="100"  cy="700" r="250" fill="rgba(255,94,58,0.07)"/>
+    <circle cx="700"  cy="500" r="180" fill="rgba(26,181,204,0.06)"/>
+  </svg>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-tag">🚀 Plataforma de gestão esportiva</div>
+      <h1 class="hero-title">
+        Seu negócio<br>
+        <span class="accent">no ritmo</span><br>
+        <span class="accent2">do esporte.</span>
+      </h1>
+      <p class="hero-sub">
+        Do agendamento ao pagamento, da gamificação ao painel de gestão — tudo em um só lugar. Feito para escolas, quadras, academias e muito mais.
+      </p>
+      <div class="hero-actions">
+        <a href="https://wa.me/5581997411297" target="_blank" class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Quero conhecer
+        </a>
+        <a href="#funcionalidades" class="btn-ghost">Ver funcionalidades →</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>+20</strong><span>segmentos atendidos</span></div>
+        <div class="hero-stat"><strong>100%</strong><span>online & mobile</span></div>
+        <div class="hero-stat"><strong>1</strong><span>plataforma, tudo nela</span></div>
+      </div>
+    </div>
+
+    <!-- App Mockup -->
+    <div class="hero-mockup">
+      <div class="mockup-card">
+        <div class="mockup-header">
+          <span class="mockup-title">📊 Dashboard hoje</span>
+          <span class="mockup-badge">Ao vivo</span>
+        </div>
+        <div class="mockup-row">
+          <div class="mockup-avatar">🏄</div>
+          <div class="mockup-info">
+            <div class="mockup-name">Carlos Mendonça</div>
+            <div class="mockup-time">09:00 · Maracaipe</div>
+          </div>
+          <span class="mockup-level">Avançado</span>
+        </div>
+        <div class="mockup-row">
+          <div class="mockup-avatar">🎾</div>
+          <div class="mockup-info">
+            <div class="mockup-name">Ana Beatriz</div>
+            <div class="mockup-time">10:30 · Quadra A</div>
+          </div>
+          <span class="mockup-level">Iniciante</span>
+        </div>
+        <div class="mockup-row">
+          <div class="mockup-avatar">🥋</div>
+          <div class="mockup-info">
+            <div class="mockup-name">Pedro Alves</div>
+            <div class="mockup-time">11:00 · Arena</div>
+          </div>
+          <span class="mockup-level">Intermediário</span>
+        </div>
+        <div class="mockup-metrics">
+          <div class="metric-box">
+            <div class="val">87%</div>
+            <div class="lbl">Ocupação</div>
+            <div class="change">↑ +5% semana</div>
+          </div>
+          <div class="metric-box">
+            <div class="val">R$4.2k</div>
+            <div class="lbl">Receita mês</div>
+            <div class="change">↑ +12%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wave bottom -->
+  <svg style="position:absolute;bottom:-2px;left:0;width:100%;pointer-events:none;" viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none">
+    <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<!-- ─── VERTICAIS ────────────────────────────────── -->
+<section id="verticais">
+  <div class="inner">
+    <div class="verticais-head reveal">
+      <div class="section-label">Segmentos</div>
+      <h2 class="section-title">Para o esporte que você ama</h2>
+      <p class="section-sub">Seja na praia, na quadra ou no estúdio — o partiu se adapta ao seu negócio.</p>
+    </div>
+
+    <div class="verticais-grid">
+      <!-- Praia & Água -->
+      <div class="vertical-card reveal reveal-delay-1">
+        <div class="v-emoji">🏄</div>
+        <div class="v-cat">Aquático & Praia</div>
+        <div class="v-name">Escola de Surf</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-2">
+        <div class="v-emoji">🪁</div>
+        <div class="v-cat">Aquático & Praia</div>
+        <div class="v-name">Kitesurf & Windsurf</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-3">
+        <div class="v-emoji">🎾</div>
+        <div class="v-cat">Praia</div>
+        <div class="v-name">Beach Tennis</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-4">
+        <div class="v-emoji">🏐</div>
+        <div class="v-cat">Praia</div>
+        <div class="v-name">Beach Volleyball</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-5">
+        <div class="v-emoji">⚽</div>
+        <div class="v-cat">Praia</div>
+        <div class="v-name">Futevolei</div>
+      </div>
+      <!-- Quadras -->
+      <div class="vertical-card reveal reveal-delay-1">
+        <div class="v-emoji">🥅</div>
+        <div class="v-cat">Quadra</div>
+        <div class="v-name">Campo de Futebol (Pelada)</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-2">
+        <div class="v-emoji">🏟️</div>
+        <div class="v-cat">Quadra</div>
+        <div class="v-name">Futsal</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-3">
+        <div class="v-emoji">🏓</div>
+        <div class="v-cat">Quadra</div>
+        <div class="v-name">Quadra de Padel</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-4">
+        <div class="v-emoji">🏟️</div>
+        <div class="v-cat">Quadra</div>
+        <div class="v-name">Quadras Poliesportivas</div>
+      </div>
+      <!-- Ação -->
+      <div class="vertical-card reveal reveal-delay-1">
+        <div class="v-emoji">🛹</div>
+        <div class="v-cat">Esporte de Ação</div>
+        <div class="v-name">Escola de Skate</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-2">
+        <div class="v-emoji">🧗</div>
+        <div class="v-cat">Esporte de Ação</div>
+        <div class="v-name">Escalada Indoor/Outdoor</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-3">
+        <div class="v-emoji">🚲</div>
+        <div class="v-cat">Esporte de Ação</div>
+        <div class="v-name">BMX</div>
+      </div>
+      <!-- Artes Marciais -->
+      <div class="vertical-card reveal reveal-delay-1">
+        <div class="v-emoji">🥋</div>
+        <div class="v-cat">Artes Marciais</div>
+        <div class="v-name">Jiu-Jitsu</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-2">
+        <div class="v-emoji">🥊</div>
+        <div class="v-cat">Artes Marciais</div>
+        <div class="v-name">Muay Thai</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-3">
+        <div class="v-emoji">🤸</div>
+        <div class="v-cat">Artes Marciais</div>
+        <div class="v-name">Capoeira</div>
+      </div>
+      <!-- Bem-estar -->
+      <div class="vertical-card reveal reveal-delay-1">
+        <div class="v-emoji">🧘</div>
+        <div class="v-cat">Bem-estar</div>
+        <div class="v-name">Yoga & Pilates</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-2">
+        <div class="v-emoji">💃</div>
+        <div class="v-cat">Bem-estar</div>
+        <div class="v-name">Estúdio de Dança</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-3">
+        <div class="v-emoji">🧘‍♂️</div>
+        <div class="v-cat">Bem-estar</div>
+        <div class="v-name">Meditação</div>
+      </div>
+      <!-- Outros -->
+      <div class="vertical-card reveal reveal-delay-1">
+        <div class="v-emoji">🎣</div>
+        <div class="v-cat">Lazer</div>
+        <div class="v-name">Clube de Pesca Esportiva</div>
+      </div>
+      <div class="vertical-card reveal reveal-delay-2">
+        <div class="v-emoji">👦</div>
+        <div class="v-cat">Infantil</div>
+        <div class="v-name">Escolinhas Esportivas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMO FUNCIONA ────────────────────────────── -->
+<section id="como-funciona">
+  <div class="inner">
+    <div class="reveal">
+      <div class="section-label">Como funciona</div>
+      <h2 class="section-title">Simples para você.<br>Incrível para seu aluno.</h2>
+      <p class="section-sub">Dois lados da mesma plataforma, cada um pensado para quem vai usar.</p>
+    </div>
+
+    <div class="como-grid">
+      <!-- Para o negócio -->
+      <div>
+        <div class="como-side-title reveal">
+          <span class="dot"></span>
+          Para o seu negócio
+        </div>
+        <div class="step reveal reveal-delay-1">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Configure seu espaço</h4>
+            <p>Cadastre suas quadras, praias, instrutores e horários disponíveis. Em minutos você está no ar.</p>
+          </div>
+        </div>
+        <div class="step reveal reveal-delay-2">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Controle a operação</h4>
+            <p>Acompanhe reservas, receita, taxa de ocupação e agenda do dia — tudo em um dashboard intuitivo.</p>
+          </div>
+        </div>
+        <div class="step reveal reveal-delay-3">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Receba online, sem complicação</h4>
+            <p>Pagamentos via Stripe integrados. Os créditos chegam automaticamente na conta do aluno.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Para o aluno -->
+      <div>
+        <div class="como-side-title reveal">
+          <span class="dot"></span>
+          Para o seu aluno
+        </div>
+        <div class="step reveal reveal-delay-1">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Cria conta e compra créditos</h4>
+            <p>O aluno cria sua conta, escolhe um pacote e compra créditos com poucos toques no celular.</p>
+          </div>
+        </div>
+        <div class="step reveal reveal-delay-2">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Agenda sua aula</h4>
+            <p>Consulta os horários disponíveis em tempo real e reserva sua aula com um clique. Simples assim.</p>
+          </div>
+        </div>
+        <div class="step reveal reveal-delay-3">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Evolui e ganha conquistas</h4>
+            <p>A cada aula, acumula XP, sobe de nível e desbloqueia conquistas que mostram sua evolução.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FUNCIONALIDADES ──────────────────────────── -->
+<section id="funcionalidades">
+  <div class="inner">
+    <div class="reveal">
+      <div class="section-label">Recursos</div>
+      <h2 class="section-title" style="color:var(--white)">Tudo que você precisa,<br>em um só lugar.</h2>
+      <p class="section-sub">Sem gambiarras, sem planilha, sem WhatsApp desordenado. Gestão profissional de verdade.</p>
+    </div>
+
+    <div class="func-grid">
+      <div class="func-card reveal reveal-delay-1">
+        <span class="func-icon">📅</span>
+        <h3>Agendamento Online</h3>
+        <p>Seus clientes reservam horários 24/7 com disponibilidade em tempo real. Sem ligação, sem confusão.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-2">
+        <span class="func-icon">👥</span>
+        <h3>Gestão de Alunos</h3>
+        <p>Histórico completo de aulas, evolução, saldo de créditos e nível de cada aluno numa tela só.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-3">
+        <span class="func-icon">🪙</span>
+        <h3>Sistema de Créditos</h3>
+        <p>Crie pacotes de aulas com sua moeda interna. Pagamento via Stripe, créditos liberados na hora.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-4">
+        <span class="func-icon">📊</span>
+        <h3>Dashboard Administrativo</h3>
+        <p>Reservas da semana, receita total, taxa de ocupação e agenda do dia — visão completa da operação.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-5">
+        <span class="func-icon">🗓️</span>
+        <h3>Controle de Vagas</h3>
+        <p>Libere slots por semana, defina vagas por instrutor/quadra e controle limites de capacidade.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-6">
+        <span class="func-icon">📍</span>
+        <h3>Multi-localização</h3>
+        <p>Gerencie múltiplos espaços, praias ou quadras em um único painel. Escale sem dor de cabeça.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-1">
+        <span class="func-icon">💳</span>
+        <h3>Pagamento Integrado</h3>
+        <p>Stripe nativo. Seu aluno paga, o crédito cai na conta dele. Automático, seguro, sem intermediários.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-2">
+        <span class="func-icon">📱</span>
+        <h3>Feito pro Celular</h3>
+        <p>Na praia, no campo, na quadra — onde o seu aluno estiver, o sistema funciona. Experiência perfeita no celular.</p>
+      </div>
+      <div class="func-card reveal reveal-delay-3">
+        <span class="func-icon">🏆</span>
+        <h3>Gamificação</h3>
+        <p>XP, conquistas e níveis que engajam seus alunos e os fazem querer voltar sempre.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── GAMIFICAÇÃO ──────────────────────────────── -->
+<section id="gamificacao">
+  <div class="inner">
+    <div class="game-inner">
+      <div>
+        <div class="reveal">
+          <div class="section-label">Diferencial</div>
+          <h2 class="section-title">Engajamento que<br><span style="color:var(--coral)">faz seu aluno<br>voltar.</span></h2>
+          <p class="section-sub">
+            A gamificação do partiu transforma a evolução do aluno em uma jornada emocionante. Ele não só agenda aulas — ele avança, conquista e se supera.
+          </p>
+          <p style="margin-top:1rem; font-size:0.875rem; line-height:1.65; color:var(--mid); padding:1rem 1.25rem; background:var(--white); border-left:3px solid var(--coral); border-radius:0 0.75rem 0.75rem 0;">
+            🏄 O exemplo ao lado é de uma <strong>escola de surf</strong> — mas a gamificação funciona para <strong>qualquer negócio</strong>: academia de jiu-jitsu, escola de skate, quadra de padel, estúdio de dança e muito mais. Cada negócio tem suas próprias conquistas e níveis, personalizados para o seu esporte.
+          </p>
+        </div>
+
+        <div class="conquistas-grid reveal" style="transition-delay:0.15s">
+          <div class="conquista">
+            <span class="icon">🌊</span>
+            <div class="cname">Primeira Onda</div>
+          </div>
+          <div class="conquista">
+            <span class="icon">🔥</span>
+            <div class="cname">Em Chamas</div>
+          </div>
+          <div class="conquista">
+            <span class="icon">⚡</span>
+            <div class="cname">Raio da Pista</div>
+          </div>
+          <div class="conquista">
+            <span class="icon">🌀</span>
+            <div class="cname">Dentro do Tubo</div>
+          </div>
+          <div class="conquista">
+            <span class="icon">🦅</span>
+            <div class="cname">Aéreo</div>
+          </div>
+          <div class="conquista">
+            <span class="icon">👑</span>
+            <div class="cname">Mestre do Esporte</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-2">
+        <div class="level-track">
+          <div class="level-row">
+            <div class="level-badge ini">🤿</div>
+            <div class="level-info">
+              <div class="level-name">Iniciante</div>
+              <div class="level-desc">Começando a jornada</div>
+            </div>
+            <div class="xp-bar-wrap">
+              <div class="xp-bar"><div class="xp-fill" style="width:35%"></div></div>
+              <div class="xp-label">350 XP</div>
+            </div>
+          </div>
+          <div class="level-row active">
+            <div class="level-badge int">⚡</div>
+            <div class="level-info">
+              <div class="level-name">Intermediário</div>
+              <div class="level-desc">Pegando o ritmo</div>
+            </div>
+            <div class="xp-bar-wrap">
+              <div class="xp-bar"><div class="xp-fill" style="width:68%"></div></div>
+              <div class="xp-label">1.2k XP</div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="level-badge adv">🏆</div>
+            <div class="level-info">
+              <div class="level-name">Avançado</div>
+              <div class="level-desc">No topo do jogo</div>
+            </div>
+            <div class="xp-bar-wrap">
+              <div class="xp-bar"><div class="xp-fill" style="width:92%"></div></div>
+              <div class="xp-label">3.8k XP</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem; padding:1.5rem; background:linear-gradient(135deg, var(--ocean), var(--deep)); border-radius:1.25rem; color:white;">
+          <div style="font-size:0.75rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--aqua); margin-bottom:0.5rem;">Aluno do mês 🏅</div>
+          <div style="font-family:var(--ff-display); font-size:1.2rem; font-weight:800; margin-bottom:0.25rem;">Lucas "Tubarão" Ferreira</div>
+          <div style="font-size:0.8rem; color:rgba(255,255,255,0.65);">14 aulas · Nível Avançado · 3.820 XP</div>
+          <div style="display:flex; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap;">
+            <span style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.7rem; color:var(--aqua);">🌊 Primeira Onda</span>
+            <span style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.7rem; color:var(--aqua);">🔥 Em Chamas</span>
+            <span style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.7rem; color:var(--aqua);">🌀 Dentro do Tubo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CASE ─────────────────────────────────────── -->
+<section id="case">
+  <div class="inner">
+    <div class="case-inner reveal">
+      <div class="section-label" style="color:var(--aqua); justify-content:center;">
+        Case de Sucesso
+      </div>
+      <blockquote class="case-quote">
+        Com o partiu eu deixei de usar caderninho e WhatsApp. Hoje tenho controle de cada aluno, cada onda e cada real que entra na escola.
+      </blockquote>
+      <div class="case-author">
+        <div class="case-avatar">🏄</div>
+        <div>
+          <div class="case-name">Ivan Silva</div>
+          <div class="case-role">Fundador · Ivan Silva Surf School · Maracaipe, PE</div>
+        </div>
+      </div>
+      <div class="case-tags">
+        <span class="case-tag">📅 Agenda digital</span>
+        <span class="case-tag">🪙 Sistema de parafinas</span>
+        <span class="case-tag">🏆 Gamificação de evolução</span>
+        <span class="case-tag">📊 Dashboard de receita</span>
+        <span class="case-tag">📍 2 praias gerenciadas</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ──────────────────────────────────── -->
+<section id="planos">
+  <div class="inner">
+    <div class="reveal" style="text-align:center; margin-bottom:1rem;">
+      <div class="section-label" style="justify-content:center;">
+        Planos
+      </div>
+      <h2 class="section-title">Escolha o seu plano</h2>
+      <p class="section-sub" style="margin:0 auto;">Comece pequeno, escale quando crescer. Sem taxa de adesão, sem contrato longo.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Básico -->
+      <div class="plan-card reveal reveal-delay-1">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price"><span>R$</span>399<span style="font-size:1.2rem;font-weight:700;">,90</span><span>/mês</span></div>
+        <div class="plan-period">cobrado mensalmente</div>
+        <div class="plan-desc">Tudo que você precisa para organizar e profissionalizar a gestão do seu negócio.</div>
+        <ul class="plan-features">
+          <li class="plan-feature"><span class="plan-check">✓</span> Alunos ilimitados</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Agendamento online</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Sistema de créditos</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Dashboard com relatório financeiro e gráficos</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> 1 local / quadra</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Suporte via WhatsApp</li>
+        </ul>
+        <a href="https://wa.me/5581997411297" target="_blank" class="btn-plan btn-plan-outline">Falar no WhatsApp →</a>
+      </div>
+
+      <!-- Enterprise (featured) -->
+      <div class="plan-card featured reveal reveal-delay-2">
+        <div class="popular-badge">🚀 Mais completo</div>
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price" style="font-size:1.8rem; margin-bottom:0.25rem;">Sob consulta</div>
+        <div class="plan-period">entre em contato para saber o preço</div>
+        <div class="plan-desc">Tudo do Básico, mais ferramentas poderosas para escalar e engajar seus alunos de verdade.</div>
+        <ul class="plan-features">
+          <li class="plan-feature"><span class="plan-check">✓</span> Tudo do plano Básico</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Pagamento integrado (Stripe)</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Disparo de e-mail para alunos</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Gamificação completa (XP, níveis, conquistas)</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Multi-localização ilimitada</li>
+          <li class="plan-feature"><span class="plan-check">✓</span> Suporte prioritário</li>
+        </ul>
+        <a href="https://wa.me/5581997411297" target="_blank" class="btn-plan btn-plan-primary">Falar no WhatsApp →</a>
+      </div>
+    </div>
+
+    <p class="pricing-note reveal">💬 Não tem certeza qual plano é o ideal? <a href="https://wa.me/5581997411297" target="_blank" style="color:var(--ocean); font-weight:600;">Fale com a gente no WhatsApp</a> e montamos o plano certo para você.</p>
+  </div>
+</section>
+
+<!-- ─── CTA FINAL ─────────────────────────────────── -->
+<section id="cta-final">
+  <div class="cta-box reveal">
+    <span class="cta-emoji">🚀</span>
+    <h2 class="cta-title">
+      Bora <span class="wave-text">começar?</span>
+    </h2>
+    <p class="cta-sub">
+      Seu negócio merece uma gestão à altura do esporte que você ensina. Fale com a gente agora e coloque o partiu pra funcionar ainda essa semana.
+    </p>
+    <a href="https://wa.me/5581997411297" target="_blank" class="btn-whatsapp">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Falar no WhatsApp agora
+    </a>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <a href="#" class="footer-logo">partiu</a>
+    <div class="footer-links">
+      <a href="#verticais">Segmentos</a>
+      <a href="#funcionalidades">Funcionalidades</a>
+      <a href="#planos">Planos</a>
+      <a href="https://wa.me/5581997411297" target="_blank">WhatsApp</a>
+    </div>
+    <div class="footer-copy">
+      © 2025 partiu · Feito com ❤️ para o esporte brasileiro
+    </div>
+  </div>
+</footer>
+
+<!-- ─── WA FLOAT ──────────────────────────────────── -->
+<a href="https://wa.me/5581997411297" target="_blank" class="wa-float" title="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+  // ─── Scroll Reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ─── Nav hamburger
+  function toggleMenu() {
+    const links = document.querySelector('.nav-links');
+    const isOpen = links.style.display === 'flex';
+    links.style.display = isOpen ? 'none' : 'flex';
+    links.style.flexDirection = 'column';
+    links.style.position = 'absolute';
+    links.style.top = '70px';
+    links.style.left = '0';
+    links.style.right = '0';
+    links.style.background = 'rgba(6,78,90,0.97)';
+    links.style.padding = '1.5rem 5vw';
+    links.style.gap = '1.25rem';
+    links.style.backdropFilter = 'blur(14px)';
+  }
+
+  // ─── Nav background on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      nav.style.background = 'rgba(6,78,90,0.97)';
+    } else {
+      nav.style.background = 'rgba(6,78,90,0.85)';
+    }
+  });
+</script>
+</body>
+</html>
